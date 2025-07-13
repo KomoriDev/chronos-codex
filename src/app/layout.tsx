@@ -8,6 +8,7 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar";
+import { ScenarioHistoryManager } from "@/components/history-manager";
 import "@/styles/global.css";
 
 export const metadata: Metadata = {
@@ -24,6 +25,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body>
         <Toaster position="top-right" />
+        <ScenarioHistoryManager />
+
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

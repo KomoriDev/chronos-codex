@@ -5,8 +5,11 @@ import {
   IconFolder,
   IconShare3,
   IconTrash,
-  type Icon,
+  IconScript,
 } from "@tabler/icons-react"
+import Link from "next/link"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
 import {
   DropdownMenu,
@@ -25,28 +28,49 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 
-export function NavDocuments({
-  items,
-}: {
-  items: {
-    name: string
-    url: string
-    icon: Icon
-  }[]
-}) {
+const SCENARIO_HISTORY_KEY = "scenarioHistory"
+
+interface ScenarioHistoryItem {
+  id: string
+  name: string
+  lastVisited: string
+}
+
+export function NavDocuments() {
+  const route = useRouter()
   const { isMobile } = useSidebar()
+  const [visitedScenarios, setVisitedScenarios] = useState<ScenarioHistoryItem[]>([])
+
+  useEffect(() => {
+    try {
+      const storedHistory = localStorage.getItem(SCENARIO_HISTORY_KEY)
+
+      if (storedHistory) {
+        const parsedHistory: ScenarioHistoryItem[] = JSON.parse(storedHistory)
+
+        parsedHistory.sort((a, b) => {
+          return new Date(b.lastVisited).getTime() - new Date(a.lastVisited).getTime()
+        })
+
+        setVisitedScenarios(parsedHistory)
+      }
+    } catch (error) {
+      console.error("Error fetching scenario history from localStorage:", error)
+      setVisitedScenarios([])
+    }
+  }, [])
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Scenarios</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
-          <SidebarMenuItem key={item.name}>
+        {visitedScenarios.map((scenario) => (
+          <SidebarMenuItem key={scenario.name}>
             <SidebarMenuButton asChild>
-              <a href={item.url}>
-                <item.icon />
-                <span>{item.name}</span>
-              </a>
+              <Link href={`/scenario/${scenario.id}`}>
+                <IconScript />
+                <span>{scenario.name}</span>
+              </Link>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -63,7 +87,7 @@ export function NavDocuments({
                 side={isMobile ? "bottom" : "right"}
                 align={isMobile ? "end" : "start"}
               >
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => route.push(`/scenario/${scenario.id}`)}>
                   <IconFolder />
                   <span>Open</span>
                 </DropdownMenuItem>
