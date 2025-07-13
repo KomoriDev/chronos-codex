@@ -33,14 +33,14 @@ export function NavDocuments({
     url: string
     icon: Icon
   }[]
-},) {
-  const { isMobile, } = useSidebar()
+}) {
+  const { isMobile } = useSidebar()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Scenarios</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item,) => (
+        {items.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <a href={item.url}>
@@ -79,7 +79,7 @@ export function NavDocuments({
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
-        ),)}
+        ))}
         <SidebarMenuItem>
           <SidebarMenuButton className="text-sidebar-foreground/70">
             <IconDots className="text-sidebar-foreground/70" />

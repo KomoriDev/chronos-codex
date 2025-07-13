@@ -1,5 +1,5 @@
-import type { Metadata, } from "next";
-import { ThemeProvider, } from "@/components/theme-provider";
+import type { Metadata } from "next";
+import { ThemeProvider } from "@/components/theme-provider";
 import "@/styles/global.css";
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>,) {
+}>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
