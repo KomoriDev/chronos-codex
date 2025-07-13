@@ -21,8 +21,8 @@ const eslintConfig = [
       "@stylistic/quotes": ["error", "double"],
       "@stylistic/comma-dangle": ["error", "always-multiline"],
       "@stylistic/no-extra-semi": "error",
-    }
-  }
+    },
+  },
 ];
 
 export default eslintConfig;
