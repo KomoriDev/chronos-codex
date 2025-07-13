@@ -1,42 +1,29 @@
-import { AppSidebar } from "@/components/app-sidebar"
 import { LoginForm } from "@/components/login-form"
-import { SiteHeader } from "@/components/site-header"
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar"
+import { ScenarioCard } from "@/components/scenario-card"
 import { createClient } from "@/lib/supabase/server"
 
 export default async function Page() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const { data: scenarios } = await supabase.from("scenarios").select()
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-
-            </div>
-          </div>
-        </div>
-      </SidebarInset>
-
+    <>
+      <div className="flex flex-col items-center px-4 py-4 md:px-6 md:py-6">
+        <h2 className="text-2xl font-bold">👋 Hello</h2>
+        <p className="text-sm mt-1">Choose the scenario you like!</p>
+        <span className="flex justify-evenly w-full mt-4 gap-4 md:mt-6 md:gap-6">
+          {scenarios?.map((scenario) => (
+            <ScenarioCard key={scenario.id} scenario={scenario} />
+          ))}
+        </span>
+      </div>
       {!user && (
         <div className="fixed bottom-4 right-4 z-50 p-5 rounded-lg shadow-xl max-w-sm">
           <LoginForm />
         </div>
       )}
-    </SidebarProvider>
+    </>
+
   )
 }
