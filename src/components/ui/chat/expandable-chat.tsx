@@ -1,12 +1,12 @@
-"use client";
+"use client"
 
-import React, { useRef, useState } from "react";
-import { X, MessageCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import React, { useRef, useState } from "react"
+import { X, MessageCircle } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 
-export type ChatPosition = "bottom-right" | "bottom-left";
-export type ChatSize = "sm" | "md" | "lg" | "xl" | "full";
+export type ChatPosition = "bottom-right" | "bottom-left"
+export type ChatSize = "sm" | "md" | "lg" | "xl" | "full"
 
 const chatConfig = {
   dimensions: {
@@ -29,7 +29,7 @@ const chatConfig = {
     closed:
       "pointer-events-none opacity-0 invisible scale-100 sm:translate-y-5",
   },
-};
+}
 
 interface ExpandableChatProps extends React.HTMLAttributes<HTMLDivElement> {
   position?: ChatPosition;
@@ -45,10 +45,10 @@ const ExpandableChat: React.FC<ExpandableChatProps> = ({
   children,
   ...props
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const chatRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false)
+  const chatRef = useRef<HTMLDivElement>(null)
 
-  const toggleChat = () => setIsOpen(!isOpen);
+  const toggleChat = () => setIsOpen(!isOpen)
 
   return (
     <div
@@ -81,10 +81,10 @@ const ExpandableChat: React.FC<ExpandableChatProps> = ({
         toggleChat={toggleChat}
       />
     </div>
-  );
-};
+  )
+}
 
-ExpandableChat.displayName = "ExpandableChat";
+ExpandableChat.displayName = "ExpandableChat"
 
 const ExpandableChatHeader: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   className,
@@ -94,23 +94,23 @@ const ExpandableChatHeader: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
     className={cn("flex items-center justify-between p-4 border-b", className)}
     {...props}
   />
-);
+)
 
-ExpandableChatHeader.displayName = "ExpandableChatHeader";
+ExpandableChatHeader.displayName = "ExpandableChatHeader"
 
 const ExpandableChatBody: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   className,
   ...props
-}) => <div className={cn("flex-grow overflow-y-auto", className)} {...props} />;
+}) => <div className={cn("flex-grow overflow-y-auto", className)} {...props} />
 
-ExpandableChatBody.displayName = "ExpandableChatBody";
+ExpandableChatBody.displayName = "ExpandableChatBody"
 
 const ExpandableChatFooter: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   className,
   ...props
-}) => <div className={cn("border-t p-4", className)} {...props} />;
+}) => <div className={cn("border-t p-4", className)} {...props} />
 
-ExpandableChatFooter.displayName = "ExpandableChatFooter";
+ExpandableChatFooter.displayName = "ExpandableChatFooter"
 
 interface ExpandableChatToggleProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -141,13 +141,13 @@ const ExpandableChatToggle: React.FC<ExpandableChatToggleProps> = ({
       icon || <MessageCircle className="h-6 w-6" />
     )}
   </Button>
-);
+)
 
-ExpandableChatToggle.displayName = "ExpandableChatToggle";
+ExpandableChatToggle.displayName = "ExpandableChatToggle"
 
 export {
   ExpandableChat,
   ExpandableChatHeader,
   ExpandableChatBody,
   ExpandableChatFooter,
-};
+}

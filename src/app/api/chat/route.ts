@@ -1,9 +1,9 @@
-import { streamText  } from "ai";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { streamText  } from "ai"
+import { createGoogleGenerativeAI } from "@ai-sdk/google"
 
-import { createClient } from "@/lib/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
-import { Tables } from "@/types/database";
+import { createClient } from "@/lib/supabase/server"
+import { NextRequest, NextResponse } from "next/server"
+import { Tables } from "@/types/database"
 
 const google = createGoogleGenerativeAI({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY!,
@@ -13,25 +13,25 @@ export async function POST(req: NextRequest) {
   const supabase = await createClient()
 
   try {
-    const { messages, sessionId, d20RollResult } = await req.json();
+    const { messages, sessionId, d20RollResult } = await req.json()
 
     if (!sessionId || !messages || !Array.isArray(messages) || messages.length === 0) {
-      return NextResponse.json({ error: "Invalid request: sessionId and messages are required." }, { status: 400 });
+      return NextResponse.json({ error: "Invalid request: sessionId and messages are required." }, { status: 400 })
     }
 
     const { data: gameSessionData, error: sessionError } = await supabase
       .from("game_sessions")
       .select("*, scenarios(*)")
       .eq("id", sessionId)
-      .single();
+      .single()
 
     if (sessionError || !gameSessionData) {
-      console.error("Error fetching game session:", sessionError);
-      return NextResponse.json({ error: "Game session not found or error fetching." }, { status: 404 });
+      console.error("Error fetching game session:", sessionError)
+      return NextResponse.json({ error: "Game session not found or error fetching." }, { status: 404 })
     }
 
-    const gameSession: Tables<"game_sessions"> = gameSessionData as Tables<"game_sessions">;
-    const scenario: Tables<"scenarios"> = gameSessionData.scenarios;
+    const gameSession: Tables<"game_sessions"> = gameSessionData as Tables<"game_sessions">
+    const scenario: Tables<"scenarios"> = gameSessionData.scenarios
 
     const systemPromptContent = `
       You are an experienced Dungeon Master (DM) hosting a D&D-style text adventure.
@@ -49,22 +49,22 @@ export async function POST(req: NextRequest) {
       If no specific state needs to be updated, omit this field.
 
       Please generate a narrative response based on the information above.
-    `;
+    `
 
     const result = streamText({
       model: google("gemini-1.5-flash"),
       system: systemPromptContent,
       messages: messages,
       onError: (error) => {
-        console.error("Error from streamText:", error);
+        console.error("Error from streamText:", error)
         throw error
       },
-    });
+    })
 
     return result.toDataStreamResponse()
 
   } catch (e) {
-    return NextResponse.json({ error: e }, { status: 500 });
+    return NextResponse.json({ error: e }, { status: 500 })
   }
 }
 
@@ -72,22 +72,22 @@ export async function GET(req: NextRequest) {
   const supabase = await createClient()
 
   try {
-    const { searchParams } = new URL(req.url);
-    const sessionId = searchParams.get("sessionId");
+    const { searchParams } = new URL(req.url)
+    const sessionId = searchParams.get("sessionId")
 
     if (!sessionId) {
-      return NextResponse.json({ error: "Missing sessionId parameter." }, { status: 400 });
+      return NextResponse.json({ error: "Missing sessionId parameter." }, { status: 400 })
     }
 
     const { data, error } = await supabase
       .from("conversation_history")
       .select("*")
       .eq("session_id", sessionId)
-      .order("turn_number", { ascending: true });
+      .order("turn_number", { ascending: true })
 
     if (error) {
-      console.error("Error fetching conversation history:", error);
-      return NextResponse.json({ error: "Error fetching conversation history." }, { status: 500 });
+      console.error("Error fetching conversation history:", error)
+      return NextResponse.json({ error: "Error fetching conversation history." }, { status: 500 })
     }
 
     const formattedHistory = data.map(msg => ({
@@ -96,12 +96,12 @@ export async function GET(req: NextRequest) {
       content: msg.content,
       timestamp: new Date(msg.timestamp || "").toISOString(),
       turn_number: msg.turn_number,
-    }));
+    }))
 
-    return NextResponse.json(formattedHistory, { status: 200 });
+    return NextResponse.json(formattedHistory, { status: 200 })
 
   } catch (error) {
-    console.error("API Error:", error);
-    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
+    console.error("API Error:", error)
+    return NextResponse.json({ error: "Internal server error." }, { status: 500 })
   }
 }

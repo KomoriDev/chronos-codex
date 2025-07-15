@@ -1,20 +1,20 @@
-import { Toaster } from "sonner";
-import type { Metadata } from "next";
-import { AppSidebar } from "@/components/app-sidebar";
-import { ThemeProvider } from "@/components/theme-provider";
-import { AuthProvider } from "@/components/auth-provider";
-import { SiteHeader } from "@/components/site-header";
+import { Toaster } from "sonner"
+import type { Metadata } from "next"
+import { AppSidebar } from "@/components/app-sidebar"
+import { ThemeProvider } from "@/components/theme-provider"
+import { AuthProvider } from "@/components/auth-provider"
+import { SiteHeader } from "@/components/site-header"
 import {
   SidebarInset,
   SidebarProvider,
-} from "@/components/ui/sidebar";
-import { ScenarioHistoryManager } from "@/components/history-manager";
-import "@/styles/global.css";
+} from "@/components/ui/sidebar"
+import { ScenarioHistoryManager } from "@/components/history-manager"
+import "@/styles/global.css"
 
 export const metadata: Metadata = {
   title: "Chronos Codex",
   description: "Interactive, text-based, AI-powered D&D-style game.",
-};
+}
 
 export default function RootLayout({
   children,
@@ -52,5 +52,5 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }

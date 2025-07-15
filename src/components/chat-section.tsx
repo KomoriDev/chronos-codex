@@ -1,35 +1,35 @@
-import { useChat } from "@ai-sdk/react";
-import { useRef, useState, useEffect } from "react";
+import { useChat } from "@ai-sdk/react"
+import { useRef, useState, useEffect } from "react"
 
-import { Avatar, AvatarFallback } from "./ui/avatar";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { ScrollArea } from "./ui/scroll-area";
-import { toast } from "sonner";
+import { Avatar, AvatarFallback } from "./ui/avatar"
+import { Input } from "./ui/input"
+import { Button } from "./ui/button"
+import { ScrollArea } from "./ui/scroll-area"
+import { toast } from "sonner"
 
 interface ChatSectionProps {
   sessionId: string
 }
 
 export default function ChatSection({ sessionId }: ChatSectionProps){
-  const [d20Roll, setD20Roll] = useState<number | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [d20Roll, setD20Roll] = useState<number | null>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
 
   const { messages, input, handleInputChange, handleSubmit, status } = useChat({
     api: "/api/chat",
     onFinish: () => {
-      setD20Roll(null);
+      setD20Roll(null)
     },
     onError: (error) => {
       console.log(error)
       toast.error("Oops!", { "description": error.message })
     },
-  });
+  })
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
 
   return (
     <div className="flex flex-col h-full bg-sidebar border border-sidebar rounded-lg shadow-lg">
@@ -109,5 +109,5 @@ export default function ChatSection({ sessionId }: ChatSectionProps){
         </Button>
       </form>
     </div>
-  );
+  )
 }

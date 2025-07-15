@@ -58,12 +58,12 @@ export default function ScenarioPage() {
   }, [user, scenario])
 
   const createGameSession = useCallback(async (scenarioId: string) => {
-    if (!user) return;
+    if (!user) return
 
-    const hasCreatedSession = sessionStorage.getItem(`created_${scenarioId}`);
+    const hasCreatedSession = sessionStorage.getItem(`created_${scenarioId}`)
     if (hasCreatedSession === "true") {
-      console.log("Session already created for this scenario in this session.");
-      return;
+      console.log("Session already created for this scenario in this session.")
+      return
     }
 
     try {
@@ -109,7 +109,7 @@ export default function ScenarioPage() {
       <div className="container mx-auto p-4 h-screen flex items-center justify-center">
         <p>Loading scenario and sessions...</p>
       </div>
-    );
+    )
   }
 
   return (

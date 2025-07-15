@@ -21,10 +21,10 @@ export function ScenarioHistoryManager() {
   useEffect(() => {
     const storedHistory = localStorage.getItem(SCENARIO_HISTORY_KEY)
     if (storedHistory) {
-      const parsedHistory: ScenarioHistoryItem[] = JSON.parse(storedHistory);
+      const parsedHistory: ScenarioHistoryItem[] = JSON.parse(storedHistory)
       setHistory(parsedHistory)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
@@ -56,7 +56,7 @@ export function ScenarioHistoryManager() {
           if (existingIndex !== -1) {
             updatedHistory = prevHistory.map((item, index) =>
               index === existingIndex ? { ...item, name: scenarioName, lastVisited: now } : item,
-            );
+            )
           } else {
             updatedHistory = [...prevHistory, { id, name: scenarioName, lastVisited: now }]
           }

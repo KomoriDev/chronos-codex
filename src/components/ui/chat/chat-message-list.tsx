@@ -1,7 +1,7 @@
-import * as React from "react";
-import { ArrowDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useAutoScroll } from "./useAutoScroll";
+import * as React from "react"
+import { ArrowDown } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useAutoScroll } from "./useAutoScroll"
 
 interface ChatMessageListProps extends React.HTMLAttributes<HTMLDivElement> {
   smooth?: boolean;
@@ -13,7 +13,7 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
       useAutoScroll({
         smooth,
         content: children,
-      });
+      })
 
     return (
       <div className="relative w-full h-full">
@@ -30,7 +30,7 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
         {!isAtBottom && (
           <Button
             onClick={() => {
-              scrollToBottom();
+              scrollToBottom()
             }}
             size="icon"
             variant="outline"
@@ -41,10 +41,10 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
           </Button>
         )}
       </div>
-    );
+    )
   },
-);
+)
 
-ChatMessageList.displayName = "ChatMessageList";
+ChatMessageList.displayName = "ChatMessageList"
 
-export { ChatMessageList };
+export { ChatMessageList }

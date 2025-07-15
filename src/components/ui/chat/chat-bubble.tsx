@@ -1,9 +1,9 @@
-import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import MessageLoading from "./message-loading";
-import { Button, ButtonProps } from "../button";
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import MessageLoading from "./message-loading"
+import { Button, ButtonProps } from "../button"
 
 // ChatBubble
 const chatBubbleVariant = cva(
@@ -24,7 +24,7 @@ const chatBubbleVariant = cva(
       layout: "default",
     },
   },
-);
+)
 
 interface ChatBubbleProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -50,8 +50,8 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       )}
     </div>
   ),
-);
-ChatBubble.displayName = "ChatBubble";
+)
+ChatBubble.displayName = "ChatBubble"
 
 // ChatBubbleAvatar
 interface ChatBubbleAvatarProps {
@@ -69,7 +69,7 @@ const ChatBubbleAvatar: React.FC<ChatBubbleAvatarProps> = ({
     <AvatarImage src={src} alt="Avatar" />
     <AvatarFallback>{fallback}</AvatarFallback>
   </Avatar>
-);
+)
 
 // ChatBubbleMessage
 const chatBubbleMessageVariants = cva("p-4", {
@@ -88,7 +88,7 @@ const chatBubbleMessageVariants = cva("p-4", {
     variant: "received",
     layout: "default",
   },
-});
+})
 
 interface ChatBubbleMessageProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -121,8 +121,8 @@ const ChatBubbleMessage = React.forwardRef<
       )}
     </div>
   ),
-);
-ChatBubbleMessage.displayName = "ChatBubbleMessage";
+)
+ChatBubbleMessage.displayName = "ChatBubbleMessage"
 
 // ChatBubbleTimestamp
 interface ChatBubbleTimestampProps
@@ -138,12 +138,12 @@ const ChatBubbleTimestamp: React.FC<ChatBubbleTimestampProps> = ({
   <div className={cn("text-xs mt-2 text-right", className)} {...props}>
     {timestamp}
   </div>
-);
+)
 
 // ChatBubbleAction
 type ChatBubbleActionProps = ButtonProps & {
   icon: React.ReactNode;
-};
+}
 
 const ChatBubbleAction: React.FC<ChatBubbleActionProps> = ({
   icon,
@@ -162,7 +162,7 @@ const ChatBubbleAction: React.FC<ChatBubbleActionProps> = ({
   >
     {icon}
   </Button>
-);
+)
 
 interface ChatBubbleActionWrapperProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -187,8 +187,8 @@ const ChatBubbleActionWrapper = React.forwardRef<
   >
     {children}
   </div>
-));
-ChatBubbleActionWrapper.displayName = "ChatBubbleActionWrapper";
+))
+ChatBubbleActionWrapper.displayName = "ChatBubbleActionWrapper"
 
 export {
   ChatBubble,
@@ -199,4 +199,4 @@ export {
   chatBubbleMessageVariants,
   ChatBubbleAction,
   ChatBubbleActionWrapper,
-};
+}

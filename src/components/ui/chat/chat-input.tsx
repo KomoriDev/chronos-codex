@@ -1,6 +1,6 @@
-import * as React from "react";
-import { Textarea } from "../textarea";
-import { cn } from "@/lib/utils";
+import * as React from "react"
+import { Textarea } from "../textarea"
+import { cn } from "@/lib/utils"
 
 type ChatInputProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>
 
@@ -17,7 +17,7 @@ const ChatInput = React.forwardRef<HTMLTextAreaElement, ChatInputProps>(
       {...props}
     />
   ),
-);
-ChatInput.displayName = "ChatInput";
+)
+ChatInput.displayName = "ChatInput"
 
-export { ChatInput };
+export { ChatInput }
