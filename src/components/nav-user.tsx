@@ -3,9 +3,11 @@
 import { User } from "@supabase/supabase-js"
 import {
   IconDotsVertical,
+  IconLogin,
   IconLogout,
   IconUserCircle,
 } from "@tabler/icons-react"
+import { useRouter } from "next/navigation"
 
 import {
   Avatar,
@@ -31,9 +33,11 @@ import { createClient } from "@/lib/supabase/client"
 
 export function NavUser({ user }: { user: User | null }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
 
   const supabase = createClient()
 
+  const handleLogin = async () => router.push("/auth/sign-in")
   const handleLogout = async () => await supabase.auth.signOut()
 
   return (
@@ -80,15 +84,17 @@ export function NavUser({ user }: { user: User | null }) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <IconUserCircle />
-                Account
-              </DropdownMenuItem>
+              { user && (
+                <DropdownMenuItem>
+                  <IconUserCircle />
+                  Account
+                </DropdownMenuItem>
+              )}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
-              <IconLogout />
-              Log out
+            <DropdownMenuItem onClick={user ? handleLogout : handleLogin}>
+              { user ? <IconLogout /> : <IconLogin /> }
+              { user ? "Log out" : "Log in"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
