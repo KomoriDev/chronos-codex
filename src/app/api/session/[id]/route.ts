@@ -40,3 +40,34 @@ export async function GET(
     return NextResponse.json({ error: "Failed to get session" }, { status: 500 })
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  const { id } = params
+  const supabase = await createClient()
+
+  try {
+    const { data, error } = await supabase
+      .from("game_sessions")
+      .delete()
+      .eq("id", id)
+      .select(`
+        *,
+        scenarios (
+          name,
+          description,
+          template_json
+        )
+      `)
+      .order("created_at", { ascending: false })
+
+    if (error) throw error
+
+    return NextResponse.json({ data }, { status: 200 })
+  } catch (error) {
+    console.error("Failed to delete session:", error)
+    return NextResponse.json({ error: "Failed to delete session" }, { status: 500 })
+  }
+}

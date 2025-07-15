@@ -1,23 +1,68 @@
 "use client"
 
+import { Plus } from "lucide-react"
+import { useParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
-import { GameSession } from "@/types/context"
+
 import { Tables } from "@/types/database"
 import ChatSection from "@/components/chat-section"
 import { useAuth } from "@/hooks/use-auth"
-import { useParams } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu"
 
 export default function ScenarioPage() {
   const { id } = useParams()
   const { user } = useAuth()
   const [isLoading, setIsLoading] = useState(true)
   const [scenario, setScenario] = useState<Tables<"scenarios">>()
-  const [gameSessions, setGameSessions] = useState<GameSession[]>([])
+  const [gameSessions, setGameSessions] = useState<Tables<"game_sessions">[]>([])
   const [currentSessionId, setCurrentSessionId] = useState<string>("")
+
+  const createGameSession = useCallback(async () => {
+    if (!user || !scenario) return
+
+    const userId = user.id
+    const scenarioId = scenario.id
+    const response = await fetch("/api/session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId,
+        scenarioId,
+        initialState: { level: 1, score: 0 },
+      }),
+    })
+
+    const data = await response.json()
+
+    setCurrentSessionId(data.session.id)
+    setGameSessions((prev) => [...prev, data.session])
+
+    return data.session
+  }, [scenario, user])
+
+  const deleteGameSession = async (sessionId: string) => {
+    if (!user || !scenario) return
+
+    await fetch(`/api/session/${sessionId}`, { method: "DELETE" })
+
+    setGameSessions((prevSessions) => {
+      const updatedSessions = prevSessions.filter((session) => session.id !== sessionId)
+
+      if (currentSessionId === sessionId) {
+        setCurrentSessionId(updatedSessions.length > 0 ? updatedSessions[0].id : "")
+      }
+
+      return updatedSessions
+    })
+  }
 
   useEffect(() => {
     const fetchScenarioData = async () => {
       if (!id) return
+
       try {
         const response = await fetch(`/api/scenario/${id}`)
         const data = await response.json()
@@ -38,14 +83,18 @@ export default function ScenarioPage() {
 
       try {
         const response = await fetch(`/api/session?userId=${user.id}`)
-        const sessions = (await response.json()).sessions as GameSession[]
+        const sessions = (await response.json()).sessions as Tables<"game_sessions">[]
 
         const filteredSessions = sessions.filter(
           (session) => session.scenario_id === scenario.id,
         )
-        setGameSessions(filteredSessions || [])
+        if (filteredSessions.length === 0) {
+          await createGameSession()
+        } else {
+          setGameSessions(filteredSessions || [])
+          setCurrentSessionId(filteredSessions[0].id)
+        }
         setIsLoading(false)
-
       } catch (error) {
         console.error(error)
         setIsLoading(false)
@@ -55,54 +104,8 @@ export default function ScenarioPage() {
     if (scenario) {
       fetchUserGameSessions()
     }
-  }, [user, scenario])
 
-  const createGameSession = useCallback(async (scenarioId: string) => {
-    if (!user) return
-
-    const hasCreatedSession = sessionStorage.getItem(`created_${scenarioId}`)
-    if (hasCreatedSession === "true") {
-      console.log("Session already created for this scenario in this session.")
-      return
-    }
-
-    try {
-      const userId = user.id
-      const response = await fetch("/api/session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId,
-          scenarioId,
-          initialState: { level: 1, score: 0 },
-        }),
-      })
-
-      const data = await response.json()
-      setCurrentSessionId(data.session.id)
-      setGameSessions((prev) => [...prev, data.session])
-      sessionStorage.setItem(`created_${scenarioId}`, "true")
-
-    } catch (error) {
-      console.error(error)
-    }
-  }, [user])
-
-  useEffect(() => {
-    if (isLoading || !scenario || !user) return
-
-    const existingSession = gameSessions.find(
-      (session) => session.scenario_id === scenario.id,
-    )
-
-    if (existingSession) {
-      setCurrentSessionId(existingSession.id)
-    } else {
-      createGameSession(scenario.id)
-    }
-  }, [scenario, user, gameSessions, createGameSession, isLoading])
+  }, [user, scenario, createGameSession])
 
   if (isLoading) {
     return (
@@ -119,17 +122,26 @@ export default function ScenarioPage() {
           <h2 className="text-xl font-semibold mb-4">{scenario?.name}</h2>
           <p className="text-sm text-zinc-500 mb-6">{scenario?.description}</p>
 
-          <h2 className="text-xl font-semibold mb-4">History</h2>
+          <span className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">History</h2>
+            <Button variant="outline" onClick={createGameSession}><Plus /> 新增</Button>
+          </span>
           <div className="space-y-2">
             {gameSessions.map((session) => (
-              <div key={session.id} className="p-3 border rounded-lg">
-                <h4 className="font-medium text-sm">{session.scenarios.name}</h4>
-                <button
-                  onClick={() => setCurrentSessionId(session.id)}
-                  className="mt-1 px-2 py-1 bg-zinc-800 text-white text-xs rounded hover:text-white/80"
-                >
-                  Continue
-                </button>
+              <div key={session.id}>
+                <ContextMenu>
+                  <ContextMenuTrigger>
+                    <div
+                      className={`p-3 border rounded-lg transition hover:border-zinc-600 hover:cursor-pointer ${ session.id === currentSessionId ? "border-zinc-700" : ""}`}
+                      onClick={() => setCurrentSessionId(session.id)}
+                    >
+                      <h4 className="font-medium text-sm">{scenario?.name}</h4>
+                    </div>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent>
+                    <ContextMenuItem onClick={async () => deleteGameSession(session.id)}>Delete</ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
               </div>
             ))}
           </div>
