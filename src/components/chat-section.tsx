@@ -42,7 +42,8 @@ export default function ChatSection(props: ChatSectionProps) {
             {
               id: "initial",
               role: "assistant",
-              content: "Welcome! You're embarking on a D&D-style text adventure. Get ready to use your imagination and face whatever challenges lie ahead.",
+              content:
+                "Welcome! You're embarking on a D&D-style text adventure. Get ready to use your imagination and face whatever challenges lie ahead.",
               turn_number: 0,
               timestamp: new Date().toISOString(),
             } as Message,
@@ -96,7 +97,7 @@ export default function ChatSection(props: ChatSectionProps) {
         <div className="text-sm text-white">Session ID: {sessionId.substring(0, 8)}...</div>
       </div>
 
-      <ScrollArea className="h-screen">
+      <ScrollArea className="flex-1">
         <ChatMessageList>
           {messages.map((message) => (
             <ChatBubble key={message.id} variant={message.role == "user" ? "sent" : "received"}>
@@ -148,4 +149,5 @@ export default function ChatSection(props: ChatSectionProps) {
         </Button>
       </form>
     </div>
-  )}
+  )
+}
