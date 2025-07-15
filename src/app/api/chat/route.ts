@@ -1,4 +1,4 @@
-import { streamText  } from "ai"
+import { streamText } from "ai"
 import { createGoogleGenerativeAI } from "@ai-sdk/google"
 
 import { createClient } from "@/lib/supabase/server"
@@ -17,6 +17,19 @@ export async function POST(req: NextRequest) {
 
     if (!sessionId || !messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json({ error: "Invalid request: sessionId and messages are required." }, { status: 400 })
+    }
+
+    const userMessage = messages[messages.length - 1]
+    if (userMessage.role === "user") {
+      await supabase
+        .from("conversation_history")
+        .insert({
+          session_id: sessionId,
+          role: userMessage.role,
+          content: userMessage.content,
+          turn_number: messages.length - 1,
+          timestamp: new Date().toISOString(),
+        })
     }
 
     const { data: gameSessionData, error: sessionError } = await supabase
@@ -58,6 +71,17 @@ export async function POST(req: NextRequest) {
       onError: (error) => {
         console.error("Error from streamText:", error)
         throw error
+      },
+      onFinish: async (result) => {
+        await supabase
+          .from("conversation_history")
+          .insert({
+            session_id: sessionId,
+            role: "assistant",
+            content: result.text,
+            turn_number: messages.length,
+            timestamp: new Date().toISOString(),
+          })
       },
     })
 

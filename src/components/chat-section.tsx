@@ -6,30 +6,79 @@ import { Input } from "./ui/input"
 import { Button } from "./ui/button"
 import { ScrollArea } from "./ui/scroll-area"
 import { toast } from "sonner"
+import { Tables } from "@/types/database"
 
-interface ChatSectionProps {
-  sessionId: string
+type ChatSectionProps = {
+  sessionId: string;
 }
+type Message = Tables<"conversation_history">
 
-export default function ChatSection({ sessionId }: ChatSectionProps){
-  const [d20Roll, setD20Roll] = useState<number | null>(null)
+export default function ChatSection(props: ChatSectionProps) {
+  const sessionId = props.sessionId
+
+  const lastSavedTurn = useRef(-1)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [ready, setReady] = useState(false)
+  const [d20Roll, setD20Roll] = useState<number | null>(null)
+  const [initialMessages, setInitialMessages] = useState<Message[] | null>(null)
 
+  useEffect(() => {
+    setInitialMessages(null)
+    setReady(false)
+    lastSavedTurn.current = -1
 
-  const { messages, input, handleInputChange, handleSubmit, status } = useChat({
+    async function fetchHistory() {
+      try {
+        const res = await fetch(`/api/conversation?sessionId=${encodeURIComponent(sessionId)}`)
+        if (!res.ok) {
+          throw new Error("Cannot obtain historical messages")
+        }
+
+        const data = (await res.json()).messages as Message[]
+
+        if (Array.isArray(data)) {
+          setInitialMessages(data)
+        } else {
+          setInitialMessages([])
+        }
+      } catch (err) {
+        toast.error("加载历史消息失败", { description: String(err) })
+        setInitialMessages([])
+      } finally {
+        setReady(true)
+      }
+    }
+    fetchHistory()
+  }, [sessionId])
+
+  const chat = useChat({
     api: "/api/chat",
+    id: sessionId,
+    initialMessages: ready ? initialMessages ?? [] : [],
     onFinish: () => {
       setD20Roll(null)
     },
     onError: (error) => {
-      console.log(error)
-      toast.error("Oops!", { "description": error.message })
+      toast.error("Oops!", { description: error.message })
     },
+    key: sessionId,
   })
+  const { messages, input, handleInputChange, handleSubmit, status } = chat
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
+
+  if (!ready)
+    return (
+      <div className="flex flex-col h-full bg-sidebar border border-sidebar rounded-lg shadow-lg">
+        <div className="p-4 border-b border-sidebar-accent flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-white">Chat</h2>
+          <div className="text-sm text-white">Session ID: {sessionId.substring(0, 8)}...</div>
+        </div>
+        <div className="flex-1 flex items-center justify-center text-white">加载中...</div>
+      </div>
+    )
 
   return (
     <div className="flex flex-col h-full bg-sidebar border border-sidebar rounded-lg shadow-lg">
@@ -80,13 +129,17 @@ export default function ChatSection({ sessionId }: ChatSectionProps){
         <div ref={messagesEndRef} />
       </ScrollArea>
 
-      <form onSubmit={event => {
-        handleSubmit(event, {
-          body: {
-            sessionId: sessionId,
-            d20RollResult: d20Roll,
-          },
-        })}} className="p-4 border-t border-sidebar-accent flex items-center gap-2">
+      <form
+        onSubmit={(event) => {
+          handleSubmit(event, {
+            body: {
+              sessionId: sessionId,
+              d20RollResult: d20Roll,
+            },
+          })
+        }}
+        className="p-4 border-t border-sidebar-accent flex items-center gap-2"
+      >
         <Input
           placeholder="Type your action..."
           value={input}
