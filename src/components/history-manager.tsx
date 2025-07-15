@@ -14,6 +14,7 @@ interface ScenarioHistoryItem {
 
 export function ScenarioHistoryManager() {
   const pathname = usePathname()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [history, setHistory] = useState<ScenarioHistoryItem[]>([])
   const supabase = createClient()
 
@@ -71,8 +72,5 @@ export function ScenarioHistoryManager() {
       updateHistory()
     }
   }, [pathname, supabase])
-
-  console.log("Current scenario history:", history)
-
   return null
 }

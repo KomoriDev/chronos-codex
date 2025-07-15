@@ -6,6 +6,33 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+export type TemplateJson = {
+  attributes: {
+    [key: string]: string
+  },
+  baseSkills: {
+    [key: string]: {
+      attribute: string
+      description: string
+    }
+  },
+  "Dnd-Scenario": string
+  startingPoint: string
+  playerCustomizations: {
+    [key: string]: {
+      content: {
+        [key: string]: {
+          description: string
+          attributeBonus: {
+            [key: string]: number
+          }
+        }
+      }
+      description: string
+    }
+  }
+}
+
 export type Database = {
   // Allows to automatically instanciate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
@@ -45,7 +72,7 @@ export type Database = {
           description: string | null
           id: string
           name: string
-          template_json: Json
+          template_json: TemplateJson
           updated_at: string | null
         }
         Insert: {
@@ -53,7 +80,7 @@ export type Database = {
           description?: string | null
           id?: string
           name: string
-          template_json: Json
+          template_json: TemplateJson
           updated_at?: string | null
         }
         Update: {
@@ -61,7 +88,7 @@ export type Database = {
           description?: string | null
           id?: string
           name?: string
-          template_json?: Json
+          template_json?: TemplateJson
           updated_at?: string | null
         }
         Relationships: []
@@ -107,6 +134,86 @@ export type Database = {
           username?: string
         }
         Relationships: []
+      },
+      conversation_history: {
+        Row: {
+          content: string
+          id: string
+          role: Database["public"]["Enums"]["conversation_role"]
+          session_id: string
+          timestamp: string | null
+          turn_number: number
+        }
+        Insert: {
+          content: string
+          id?: string
+          role: Database["public"]["Enums"]["conversation_role"]
+          session_id: string
+          timestamp?: string | null
+          turn_number: number
+        }
+        Update: {
+          content?: string
+          id?: string
+          role?: Database["public"]["Enums"]["conversation_role"]
+          session_id?: string
+          timestamp?: string | null
+          turn_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_session"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "game_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      game_sessions: {
+        Row: {
+          created_at: string | null
+          current_state: Json | null
+          id: string
+          scenario_id: string
+          status: Database["public"]["Enums"]["game_session_status"]
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_state?: Json | null
+          id?: string
+          scenario_id: string
+          status?: Database["public"]["Enums"]["game_session_status"]
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          current_state?: Json | null
+          id?: string
+          scenario_id?: string
+          status?: Database["public"]["Enums"]["game_session_status"]
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_scenario"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "scenarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["auth_id"]
+          },
+        ]
       }
     }
     Views: {
@@ -116,7 +223,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      conversation_role: "user" | "assistant" | "system"
+      game_session_status: "active" | "completed" | "abandoned"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -246,6 +354,9 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      conversation_role: ["user", "assistant", "system"],
+      game_session_status: ["active", "completed", "abandoned"],
+    },
   },
 } as const
