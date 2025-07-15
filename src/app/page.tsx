@@ -12,7 +12,7 @@ export default async function Page() {
       <div className="flex flex-col items-center px-4 py-4 md:px-6 md:py-6">
         <h2 className="text-2xl font-bold">👋 Hello</h2>
         <p className="text-sm mt-1">Choose the scenario you like!</p>
-        <span className="flex justify-evenly w-full mt-4 gap-4 md:mt-6 md:gap-6">
+        <span className="flex flex-col items-center w-full mt-4 gap-4  md:mt-6 md:gap-6 md:flex-row md:items-stretch md:justify-evenly ">
           {scenarios?.map((scenario) => (
             <ScenarioCard key={scenario.id} scenario={scenario} />
           ))}
