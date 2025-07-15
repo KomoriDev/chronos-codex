@@ -91,7 +91,7 @@ export default function ChatSection(props: ChatSectionProps) {
     )
 
   return (
-    <div className="flex flex-col h-screen bg-sidebar border border-sidebar rounded-lg shadow-lg">
+    <div className="flex flex-col h-full bg-sidebar border border-sidebar rounded-lg shadow-lg">
       <div className="p-4 border-b border-sidebar-accent flex items-center justify-between">
         <h2 className="text-xl font-semibold text-white">Chat</h2>
         <div className="text-sm text-white">Session ID: {sessionId.substring(0, 8)}...</div>
