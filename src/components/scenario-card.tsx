@@ -15,7 +15,10 @@ export function ScenarioCard({ scenario }: { scenario: Tables<"scenarios">}) {
   const route = useRouter()
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card
+      className="w-full max-w-sm transition hover:border-zinc-600 hover:cursor-pointer"
+      onClick={() => route.push(`/scenario/${scenario.id}`)}
+    >
       <CardHeader>
         <CardTitle>{scenario.name}</CardTitle>
         <CardDescription>
