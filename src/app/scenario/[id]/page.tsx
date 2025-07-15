@@ -116,7 +116,7 @@ export default function ScenarioPage() {
   }
 
   return (
-    <div className="container h-svh mx-auto p-4">
+    <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
         <div className="lg:col-span-1">
           <h2 className="text-xl font-semibold mb-4">{scenario?.name}</h2>
