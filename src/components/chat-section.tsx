@@ -36,10 +36,18 @@ export default function ChatSection(props: ChatSectionProps) {
 
         const data = (await res.json()).messages as Message[]
 
-        if (Array.isArray(data)) {
-          setInitialMessages(data)
+        if (data.length === 0) {
+          setInitialMessages([
+            {
+              id: "initial",
+              role: "assistant",
+              content: "Welcome! You're embarking on a D&D-style text adventure. Get ready to use your imagination and face whatever challenges lie ahead.",
+              turn_number: 0,
+              timestamp: new Date().toISOString(),
+            } as Message,
+          ])
         } else {
-          setInitialMessages([])
+          setInitialMessages(data)
         }
       } catch (err) {
         toast.error("加载历史消息失败", { description: String(err) })
