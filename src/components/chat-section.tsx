@@ -1,12 +1,12 @@
 import { useChat } from "@ai-sdk/react"
 import { useRef, useState, useEffect } from "react"
 
-import { Avatar, AvatarFallback } from "./ui/avatar"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
-import { ScrollArea } from "./ui/scroll-area"
 import { toast } from "sonner"
 import { Tables } from "@/types/database"
+import { ChatMessageList } from "./ui/chat/chat-message-list"
+import { ChatBubble, ChatBubbleAvatar, ChatBubbleMessage } from "./ui/chat/chat-bubble"
 
 type ChatSectionProps = {
   sessionId: string;
@@ -87,47 +87,27 @@ export default function ChatSection(props: ChatSectionProps) {
         <div className="text-sm text-white">Session ID: {sessionId.substring(0, 8)}...</div>
       </div>
 
-      <ScrollArea className="flex-1 p-4 space-y-4">
-        {messages.map((m) => (
-          <div
-            key={m.id}
-            className={`flex items-start gap-3 ${
-              m.role === "user" ? "justify-end" : "justify-start"
-            }`}
+      <ChatMessageList>
+        {messages.map((message) => (
+          <ChatBubble
+            key={message.id}
+            variant={message.role == "user" ? "sent" : "received"}
           >
-            {m.role === "assistant" && (
-              <Avatar className="w-8 h-8 top-2">
-                <AvatarFallback className="bg-slate-200 text-slate-700">DM</AvatarFallback>
-              </Avatar>
-            )}
-            <div
-              className={`max-w-[70%] p-3 rounded-lg ${
-                m.role === "user"
-                  ? "bg-blue-500 text-white rounded-br-none"
-                  : "bg-slate-100 text-slate-800 rounded-bl-none"
-              }`}
-            >
-              {m.content}
-            </div>
-            {m.role === "user" && (
-              <Avatar className="w-8 h-8">
-                <AvatarFallback className="bg-blue-100 text-blue-700">您</AvatarFallback>
-              </Avatar>
-            )}
-          </div>
+            <ChatBubbleAvatar
+              src=""
+              fallback={message.role == "user" ? "👨🏽" : "🤖"}
+            />
+            <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
+          </ChatBubble>
         ))}
+
         {status !== "ready" && (
-          <div className="flex items-start gap-3 justify-start">
-            <Avatar className="w-8 h-8">
-              <AvatarFallback className="bg-slate-200 text-slate-700">DM</AvatarFallback>
-            </Avatar>
-            <div className="max-w-[70%] p-3 rounded-lg bg-slate-100 text-slate-800 rounded-bl-none animate-pulse">
-              :thinking:
-            </div>
-          </div>
+          <ChatBubble variant="received">
+            <ChatBubbleAvatar src="" fallback="🤖" />
+            <ChatBubbleMessage isLoading />
+          </ChatBubble>
         )}
-        <div ref={messagesEndRef} />
-      </ScrollArea>
+      </ChatMessageList>
 
       <form
         onSubmit={(event) => {
