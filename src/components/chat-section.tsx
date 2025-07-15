@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import { Tables } from "@/types/database"
 import { ChatMessageList } from "./ui/chat/chat-message-list"
 import { ChatBubble, ChatBubbleAvatar, ChatBubbleMessage } from "./ui/chat/chat-bubble"
+import { ScrollArea } from "./ui/scroll-area"
 
 type ChatSectionProps = {
   sessionId: string;
@@ -95,27 +96,24 @@ export default function ChatSection(props: ChatSectionProps) {
         <div className="text-sm text-white">Session ID: {sessionId.substring(0, 8)}...</div>
       </div>
 
-      <ChatMessageList>
-        {messages.map((message) => (
-          <ChatBubble
-            key={message.id}
-            variant={message.role == "user" ? "sent" : "received"}
-          >
-            <ChatBubbleAvatar
-              src=""
-              fallback={message.role == "user" ? "👨🏽" : "🤖"}
-            />
-            <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
-          </ChatBubble>
-        ))}
+      <ScrollArea className="h-screen">
+        <ChatMessageList>
+          {messages.map((message) => (
+            <ChatBubble key={message.id} variant={message.role == "user" ? "sent" : "received"}>
+              <ChatBubbleAvatar src="" fallback={message.role == "user" ? "👨🏽" : "🤖"} />
+              <ChatBubbleMessage>{message.content}</ChatBubbleMessage>
+            </ChatBubble>
+          ))}
 
-        {status !== "ready" && (
-          <ChatBubble variant="received">
-            <ChatBubbleAvatar src="" fallback="🤖" />
-            <ChatBubbleMessage isLoading />
-          </ChatBubble>
-        )}
-      </ChatMessageList>
+          {status !== "ready" && (
+            <ChatBubble variant="received">
+              <ChatBubbleAvatar src="" fallback="🤖" />
+              <ChatBubbleMessage isLoading />
+            </ChatBubble>
+          )}
+        </ChatMessageList>
+        <div ref={messagesEndRef} />
+      </ScrollArea>
 
       <form
         onSubmit={(event) => {
@@ -150,5 +148,4 @@ export default function ChatSection(props: ChatSectionProps) {
         </Button>
       </form>
     </div>
-  )
-}
+  )}
