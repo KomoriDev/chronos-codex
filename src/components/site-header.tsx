@@ -10,7 +10,6 @@ export function SiteHeader() {
   const pathname = usePathname()
 
   const getHeaderTitle = (path: string) => {
-    console.log(pathname)
     switch (path.split("/")[1]) {
       case "":
         return "Home"

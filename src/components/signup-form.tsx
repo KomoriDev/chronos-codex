@@ -29,7 +29,7 @@ export function SignupForm({
     event.preventDefault()
 
     const supabase = createClient()
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email: email,
       password: password,
       options: {
@@ -44,7 +44,6 @@ export function SignupForm({
     if (error) {
       toast.error("Error", { description: error.message })
     } else {
-      console.log(data)
       toast.success("Email sent successfully", { description: "Please check your email to complete your login" })
     }
   }
