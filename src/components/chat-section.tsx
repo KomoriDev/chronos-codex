@@ -97,6 +97,8 @@ export default function ChatSection(props: ChatSectionProps) {
         <div className="text-sm text-white">Session ID: {sessionId.substring(0, 8)}...</div>
       </div>
 
+      {status}
+
       <ScrollArea className="flex-1">
         <ChatMessageList>
           {messages.map((message) => (
@@ -106,7 +108,7 @@ export default function ChatSection(props: ChatSectionProps) {
             </ChatBubble>
           ))}
 
-          {status !== "ready" && (
+          {status === "submitted" && (
             <ChatBubble variant="received">
               <ChatBubbleAvatar src="" fallback="🤖" />
               <ChatBubbleMessage isLoading />
