@@ -177,7 +177,7 @@ export default function ScenarioPage() {
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 h-full">
       <Dialog open={showCustomizationDialog} onOpenChange={setShowCustomizationDialog}>
         <DialogContent className="max-w-3xl h-[80vh] overflow-hidden flex flex-col">
           <DialogHeader className="flex-none">
