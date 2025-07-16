@@ -46,22 +46,60 @@ export async function POST(req: NextRequest) {
     const gameSession: Tables<"game_sessions"> = gameSessionData as Tables<"game_sessions">
     const scenario: Tables<"scenarios"> = gameSessionData.scenarios
 
+    const currentState = typeof gameSession.current_state === "string"
+      ? JSON.parse(gameSession.current_state)
+      : gameSession.current_state
+
+    const roleStyle = currentState?.customization?.parentingStyle
+    const familyType = currentState?.customization?.familyBackground
+
+    let roleDetails = null
+    let familyDetails = null
+
+    if (roleStyle && familyType) {
+      roleDetails = scenario.template_json.playerCustomizations.role.content[roleStyle]
+      familyDetails = scenario.template_json.playerCustomizations.background.content[familyType]
+    }
+
     const systemPromptContent = `
-      You are an experienced Dungeon Master (DM) hosting a D&D-style text adventure.
-      Your task is to describe the scene, drive the narrative, and update the game world based on the players' actions and the game state.
+      You are a narrative AI hosting an interactive parenting simulation.
+      You will act as an omniscient narrator and various NPCs (teachers, children, other parents, etc.)
+      to create an immersive story about Asian parenting challenges.
 
-      Story name: ${JSON.stringify(scenario.template_json["Dnd-Scenario"])}
-      Story background: ${JSON.stringify(scenario.template_json.startingPoint, null, 2)}
+      Scenario: ${JSON.stringify(scenario.template_json["Dnd-Scenario"])}
+      Starting Point: ${JSON.stringify(scenario.template_json.startingPoint, null, 2)}
 
-      Current scene template: ${JSON.stringify(scenario.template_json, null, 2)}
-      Current game status: ${JSON.stringify(gameSession.current_state, null, 2)}
+      Player's Role: ${roleStyle}
+      ${roleDetails ? `Role Description: ${JSON.stringify(roleDetails.description)}
+      Role Attributes: ${JSON.stringify(roleDetails.attributeBonus)}` : ""}
 
-      Player's D20 roll result (optional): ${d20RollResult !== null ? d20RollResult : "None"}
+      Family Background: ${familyType}
+      ${familyDetails ? `Background Description: ${JSON.stringify(familyDetails.description)}
+      Background Attributes: ${JSON.stringify(familyDetails.attributeBonus)}` : ""}
 
-      Please generate a narrative response based on the information above, and also provide a JSON object containing any game states that need to be updated.
-      If no specific state needs to be updated, omit this field.
+      Available Attributes:
+      ${Object.entries(scenario.template_json.attributes)
+        .map(([name, desc]) => `- ${name}: ${desc}`)
+        .join("\n      ")}
 
-      Please generate a narrative response based on the information above.
+      Base Skills:
+      ${Object.entries(scenario.template_json.baseSkills)
+        .map(([name, skill]) => `- ${name} (${skill.attribute}): ${skill.description}`)
+        .join("\n")}
+
+      Current game state: ${JSON.stringify(gameSession.current_state, null, 2)}
+      Roll result (if applicable): ${d20RollResult !== null ? d20RollResult : "None"}
+
+      Instructions:
+      1. Respond in character based on the scene and context
+      2. Use the player's role and family background to inform responses and consequences
+      3. Reference specific attributes and skills when they come into play
+      4. Maintain consistent personality traits based on the chosen role style
+      5. Consider the family background's influence on decisions and reactions
+      6. Incorporate cultural elements and expectations naturally into the narrative
+
+      Format your response as a natural conversation or narrative, but you can mark game mechanics
+      with brackets when relevant, e.g. [Family Honor check: 15] or [Tiger Discipline increased by 1]
     `
 
     const result = streamText({
