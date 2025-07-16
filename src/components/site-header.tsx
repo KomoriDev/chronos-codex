@@ -13,6 +13,8 @@ export function SiteHeader() {
     switch (path.split("/")[1]) {
       case "":
         return "Home"
+      case "account":
+        return "Account"
       case "auth":
         return "Auth"
       case "scenario":

@@ -85,7 +85,7 @@ export function NavUser({ user }: { user: User | null }) {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               { user && (
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push(`/account/${user.id}`)}>
                   <IconUserCircle />
                   Account
                 </DropdownMenuItem>
