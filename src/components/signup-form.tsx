@@ -37,7 +37,7 @@ export function SignupForm({
           username: username,
           avatar_url: "",
         },
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: process.env.NEXT_PUBLIC_SITE_URL,
       },
     })
 
